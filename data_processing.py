@@ -17,10 +17,10 @@ def Read_Data(x):
     return pd.read_csv(x)
 
 def Max_min_norm(x):
-    return np.array(x).reshape(-1,1)
+    return np.array((x.values-x.min())/(x.max()-x.min())).reshape(-1,1)
 
 def Log_norm(x):
-    return np.array(x).reshape(-1,1)
+    return np.array(np.log(x+1)/np.log(x.max())).reshape(-1,1)
 
 def Fillna_with_Min(x):
     return x.fillna(x.min())
