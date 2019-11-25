@@ -22,11 +22,17 @@ def Max_min_norm(x):
 def Log_norm(x):
     return np.array(np.log(x+1)/np.log(x.max())).reshape(-1,1)
 
+def Z_Score(x):
+    return np.array((x.values-x.mean())/x.std()).reshape(-1,1)
+
 def Fillna_with_Min(x):
     return x.fillna(x.min())
 
 def Fillna_with_Median(x):
     return x.fillna(x.median())
+
+def Fillna_with_Max(x):
+    return x.fillna(x.max())
 
 def Data_Processing():
     #read data from csv
