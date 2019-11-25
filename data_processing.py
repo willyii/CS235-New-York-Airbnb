@@ -2,97 +2,61 @@ import csv
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+import  seaborn as sns
+
 from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
+Address='/Users/zengdekang/Desktop/new-york-city-airbnb-open-data/AB_NYC_2019.csv'
 
+def OneHotEncoding(x):
+    #https://blog.csdn.net/m0_37324740/article/details/77169771
+    return np.array(pd.get_dummies(x))
 
-def OneHotEncoding(array,x):
+def Read_Data(x):
+    return pd.read_csv(x)
 
-    group=np.unique(array[:,x])
-    count=group.shape[0]
-    print(count)
-    transformed_data=[]
-    transpose_data=np.transpose(array)
-    one_hot_matrix=np.eye(count)
-    for i in tqdm(array[:,x]):
-        for j in range(count):
-            if i==group[j]:transformed_data.append(one_hot_matrix[j])
-    print(one_hot_matrix)
-    transformed_data=np.array(transformed_data)
-    for i in range(transformed_data.shape[1]):
-        transpose_data=np.insert(transpose_data,x+i+1,transformed_data[:,i],0)
-        print(transpose_data)
-    transpose_data=np.delete(transpose_data,x,0)
-    return np.transpose(transpose_data)
+def Max_min_norm(x):
+    return np.array(x).reshape(-1,1)
 
+def Log_norm(x):
+    return np.array(x).reshape(-1,1)
 
-#read date from csv
+def Fillna_with_Min(x):
+    return x.fillna(x.min())
 
-f=pd.read_csv('/Users/zengdekang/Desktop/new-york-city-airbnb-open-data/AB_NYC_2019.csv')
-#https://blog.csdn.net/m0_37324740/article/details/77169771
-#One_Hot_encoding for group, neibourhood and room type
-group_ohe=np.array(pd.get_dummies(f['neighbourhood_group']))
-print(group_ohe)
-neibour_ohe=np.array(pd.get_dummies(f['neighbourhood']))
-roomtype_ohe=np.array(pd.get_dummies(f['room_type']))
+def Fillna_with_Median(x):
+    return x.fillna(x.median())
 
-#max-min norm
-latitude=( f['latitude'].values - f['latitude'].min() ) / ( f['latitude'].max() - f['latitude'].min() )
-latitude=np.array(latitude).reshape(-1,1)
+def Data_Processing():
+    #read data from csv
+    csv=Read_Data(Address)
 
-longtitude=( f['longitude'].values - f['longitude'].min() ) / ( f['longitude'].max() - f['longitude'].min() )
-longtitude=np.array(longtitude).reshape(-1,1)
+    #One_Hot_encoding for group, neibourhood and room type
+    Group=OneHotEncoding(csv['neighbourhood_group'])
+    Neibourhood=OneHotEncoding(csv['neighbourhood'])
+    Roomtype=OneHotEncoding(csv['room_type'])
 
-host_listings_count=( f['calculated_host_listings_count'].values - f['calculated_host_listings_count'].min() )\
-                               / f['calculated_host_listings_count'].max() - f['calculated_host_listings_count'].min()
-host_listings_count=np.array(host_listings_count).reshape(-1,1)
+    #max-min norm
+    latitude=Max_min_norm(csv['latitude'])
+    longitude=Max_min_norm(csv['longitude'])
+    host_listings_count=Max_min_norm(csv['calculated_host_listings_count'])
+    number_of_reviews=Max_min_norm(csv['number_of_reviews'])
+    availability=Max_min_norm(csv['availability_365'])
+    nights=Log_norm(csv['minimum_nights'])
 
-number_of_reviews=( f['number_of_reviews'].values - f['number_of_reviews'].min() ) /\
-                  ( f['number_of_reviews'].max() - f['number_of_reviews'].min() )
-number_of_reviews=np.array(number_of_reviews).reshape(-1,1)
+    #processing for last_review
+    csv['last_review']=pd.to_datetime(csv['last_review'])
+    csv['last_review'] = (csv['last_review'].max() - csv['last_review']).dt.days
+    csv['last_review']=Fillna_with_Median(csv['last_review'])
+    last_view=Log_norm(csv['last_review'])
 
-availability=( f['availability_365'].values - f['availability_365'].min() ) /\
-                  ( f['availability_365'].max() - f['availability_365'].min() )
-availability=np.array(availability).reshape(-1,1)
-#z-score norm
+    #processing for reviews_pre_month
+    csv['reviews_per_month']=Fillna_with_Min(csv['reviews_per_month'])
+    reviews_per_month=Log_norm(csv['reviews_per_month'])
+    price=np.array(csv['price']).reshape(-1,1)
+    
+    data=np.hstack((Group,Neibourhood,Roomtype,latitude,longitude,nights,number_of_reviews,host_listings_count,availability,last_view,reviews_per_month,price))
+    np.save('/Users/zengdekang/Desktop/data.npy',data)
 
-price=(f['price'].values-f['price'].mean())/f['price'].std()
-nights=(f['minimum_nights'].values-f['minimum_nights'].mean())/f['minimum_nights'].std()
-price=np.array(price).reshape(-1,1)
-nights=np.array(nights).reshape(-1,1)
-#max-min norm
-f['last_review']=pd.to_datetime(f['last_review'])
-f['last_review']=f['last_review'].fillna(f['last_review'].min())
-last_view=( f['last_review'] - f['last_review'].min() ) /\
-                  ( f['last_review'].max() - f['last_review'].min() )
-print(f['last_review'].min())
-last_view=np.array(last_view).reshape(-1,1)
-#max-min norm
-f['reviews_per_month']=f['reviews_per_month'].fillna(f['reviews_per_month'].min())
-reviews_per_month=( f['reviews_per_month'] - f['reviews_per_month'].min() ) /\
-                  ( f['reviews_per_month'].max() - f['reviews_per_month'].min() )
-reviews_per_month=np.array(reviews_per_month).reshape(-1,1)
-
-data=np.hstack((group_ohe,neibour_ohe,latitude,longtitude,roomtype_ohe,nights,number_of_reviews,last_view,reviews_per_month
-                 ,host_listings_count,availability,price))
-
-
-
-
-
-#csvrows=csv.reader(f)
-#for row in csvrows:
-#    i.append(row)
-#convert to array
-#data=np.array(i)
-
-#delete columns: id, name, host_name, host_id
-#data=data[1:,4:]
-#print(data)
-#a=OneHotEncoding(data,1)
-#f=open('/Users/zengdekang/Desktop/new-york-city-airbnb-open-data/AB_NYC_2019_1.csv','w')
-##   f.writelines(row)
-
-
-#b=OneHotEncoding(a,5)
-#print(a)
+Data_Processing()
