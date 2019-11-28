@@ -6,7 +6,9 @@ Here are the code for the CS235 project.
 Finished Util package. This package include some basic function to preprocess the features. If you want to use that 
 pls use following code
 
-    from Util import OneHotEncoder
+    from Util.OneHotEncoder import OneHotEncoder
+    encoder = OneHotEncoder()
+    encoder.fit()
     
 to import the method you want. Every py file has a small example. Pls read it before use. 
 

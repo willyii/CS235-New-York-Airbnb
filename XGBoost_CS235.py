@@ -1,8 +1,8 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error
-from xgboost import XGBRegressor
-lambda_2 = 0.3
+from Util.OneHotEncoder import OneHotEncoder
+
 
 
 
@@ -232,7 +232,7 @@ class XGBoost:
         :return: predict label: dataframe type with column named "predict"
         """
 
-        if(type(test) == np.ndarray):
+        if(type(test_data) == np.ndarray):
             test_data = self.np_to_df(test_data)
         predict = pd.DataFrame({'predict': [0] * len(test_data)})
         for tree in self.tree_list:
@@ -247,30 +247,48 @@ class XGBoost:
         :return: the error of current predict
         """
 
-        # diff = (np.power(np.e, label.to_numpy())  - np.power(np.e, predict.to_numpy())) ** 2
         return mean_squared_error(label.to_numpy(), predict.to_numpy())
         # return mean_squared_error(np.power(np.e, label.to_numpy()), np.power(np.e, predict.to_numpy()))
 
 
+def Load_Data(path):
+    """
+    This function aim to load data and preprocess the features
+    :param path:  the path to the dataset
+    :return: processed dataset: numpy array format
+    """
+    raw_data = pd.read_csv(path)
+
+    # process the neighbour_hood_group
+    group_encoder = OneHotEncoder.OneHotEncoder()
+    group_encoder.fit(raw_data, "neighbourhood_group")
+
+    group_encoded = group_encoder.transform(raw_data, "neighbourhood_group")
+    print(group_encoded.shape)
+
+
 if __name__ == '__main__':
 
-    # A =  np.random.rand(1, 500) * 100
-    # B =  np.random.rand(1, 500)
-    # train_data = pd.DataFrame({"A": A[0], "B": B[0]})
-    # train_label = pd.DataFrame({"A": A[0]*B[0]  + np.random.random_integers(0,100)})
-
-    train_data = np.load("processed.npy")
-
-    train_label = pd.read_csv("AB_NYC_2019.csv")[["price"]]
-    train_label =  np.log(train_label+ 1)
-    train_label.rename(columns={"price": "predict"})
-
-
-    test = XGBoost()
-    test.fit(train_data, train_label)
-    print(test.predict(train_data))
-
-
-    # test = XGBRegressor()
+    print("I'm busy now")
+    path = "Data/AB_NYC_2019.csv"
+    Load_Data(path)
+    # # A =  np.random.rand(1, 500) * 100
+    # # B =  np.random.rand(1, 500)
+    # # train_data = pd.DataFrame({"A": A[0], "B": B[0]})
+    # # train_label = pd.DataFrame({"A": A[0]*B[0]  + np.random.random_integers(0,100)})
+    #
+    # train_data = np.load("processed.npy")
+    #
+    # train_label = pd.read_csv("AB_NYC_2019.csv")[["price"]]
+    # train_label =  np.log(train_label+ 1)
+    # train_label.rename(columns={"price": "predict"})
+    #
+    #
+    # test = XGBoost()
     # test.fit(train_data, train_label)
-    # print(mean_squared_error(train_label, test.predict(train_data)))
+    # print(test.predict(train_data))
+    #
+    #
+    # # test = XGBRegressor()
+    # # test.fit(train_data, train_label)
+    # # print(mean_squared_error(train_label, test.predict(train_data)))
