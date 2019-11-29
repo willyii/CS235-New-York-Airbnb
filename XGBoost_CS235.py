@@ -1,7 +1,10 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
 from Util.OneHotEncoder import OneHotEncoder
+from Util.Log1p_Norm import Log1p_Norm
+from Util.Max_Min_Norm import Max_Min_Norm
 
 
 
@@ -254,17 +257,41 @@ class XGBoost:
 def Load_Data(path):
     """
     This function aim to load data and preprocess the features
+    ['id', 'name', 'host_id', 'host_name', 'neighbourhood_group',
+       'neighbourhood', 'latitude', 'longitude', 'room_type', 'price',
+       'minimum_nights', 'number_of_reviews', 'last_review',
+       'reviews_per_month', 'calculated_host_listings_count',
+       'availability_365']
     :param path:  the path to the dataset
     :return: processed dataset: numpy array format
     """
     raw_data = pd.read_csv(path)
 
-    # process the neighbour_hood_group
-    group_encoder = OneHotEncoder.OneHotEncoder()
-    group_encoder.fit(raw_data, "neighbourhood_group")
+    print(raw_data.columns)
+    raw_label = raw_data[["price"]].copy()
+    raw_data = raw_data.drop(columns= ["price"])
+    X_train, X_test, y_train, y_test = train_test_split(raw_data, raw_label, test_size = 0.2, random_state = 42)
 
-    group_encoded = group_encoder.transform(raw_data, "neighbourhood_group")
-    print(group_encoded.shape)
+    # process the "neighbourhood_group"
+    group_encoder = OneHotEncoder()
+    group_encoder.fit(X_train, "neighbourhood_group")
+
+    # process the "neighbourhood"
+    neighbour_encoder = OneHotEncoder()
+    neighbour_encoder.fit(X_train, "neighbourhood")
+
+    # process the latitude
+    latitude_norm = Max_Min_Norm()
+    latitude_norm.fit(X_train, "latitude")
+
+    # process the longitude
+    longitude_norm = Max_Min_Norm()
+    longitude_norm.fit(X_train, "longitude")
+
+    # process the room_type
+    room_type_encoder = OneHotEncoder()
+    room_type_encoder.fit(X_train, "room_type")
+
 
 
 if __name__ == '__main__':

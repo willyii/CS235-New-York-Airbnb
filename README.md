@@ -27,3 +27,10 @@ it predicting the label of dataset. Like XGBoost_CS235.py file
 
 - We use log(price + 1) as label of our dataset. For other features' preprocess, you can choose by yourself.
 
+
+### Update on 28 Nov 2019
+
+Add Cleaned Data in Data fold. Which eliminate the outlier in the "price" and "minmum_nights". Besides that, it handle the missing value in rate by mean and convert the last_review to the 
+numerical feature. Which represent the date from last review to the biggest date in that column.  
+
+The process code are in Clean Data.ipynb
