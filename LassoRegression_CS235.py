@@ -32,7 +32,6 @@ def Load_Data(path):
     Process data using Dekang's original code. Nieghbourhood excluded for better results
     '''
     Group=OneHotEncoding(csv['neighbourhood_group'])
-#    Neighbourhood=OneHotEncoding(csv['neighbourhood'])
     Roomtype=OneHotEncoding(csv['room_type'])
     latitude=Max_min_norm(csv['latitude'])
     longitude=Max_min_norm(csv['longitude'])
@@ -73,7 +72,6 @@ def Load_Data(path):
     train,norms=normalize(train)
     price,prnorm=normalize(price)
     test=test/norms
-#    test_pr=test_pr/prnorm
     samples, feature_space=train.shape
     
 class Lasso:
@@ -158,22 +156,3 @@ if __name__ == '__main__':
     lasso.predict(test)
     lasso.error(test_pr)
     '''
-
-
-# In[116]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
