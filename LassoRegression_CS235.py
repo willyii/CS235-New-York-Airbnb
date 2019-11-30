@@ -29,7 +29,7 @@ def Load_Data(path):
     csv = pd.read_csv(path)
     
     ''' 
-    Process data using Dekang's original code. Nieghbourhood group excluded for better results
+    Process data using Dekang's original code. Nieghbourhood excluded for better results
     '''
     Group=OneHotEncoding(csv['neighbourhood_group'])
 #    Neighbourhood=OneHotEncoding(csv['neighbourhood'])
