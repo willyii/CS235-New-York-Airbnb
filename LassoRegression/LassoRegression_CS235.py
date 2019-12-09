@@ -88,7 +88,7 @@ class Lasso:
     
     def __init__(self, lam = 0.01):
         self.lam=lam
-        self.epochs=4000
+        self.epochs=400
         self.train_error = []
         self.val_error = []
 
@@ -119,13 +119,6 @@ class Lasso:
             for i in range(train.shape[1]):
                 r=self.rho(i, self.theta, train, price)
                 self.theta[i]=self.ST(r)
-            self.train_error.append(self.error(train, price))
-            if len(self.train_error) < 2:
-                continue
-            elif abs(self.train_error[-1] - self.train_error[-2]) < 0.001:
-                break
-            else:
-                continue
 
     
     def predict(self, data):
@@ -136,6 +129,7 @@ class Lasso:
         
     def error(self, test_data, test_label):
         ''' Calculate MSE. Remove normalization'''
+        print(self.predict(test_data))
         return mean_squared_error(test_label, self.predict(test_data))
         
 
@@ -152,9 +146,9 @@ if __name__ == '__main__':
     path = "CleanedData.csv"
     
     X_train, X_test, Y_train, Y_test = Load_Data(path)
-    # print(X_train, X_test, Y_train, Y_test)
     lasso = Lasso()
-    lasso.fit(X_train, Y_train, X_test, Y_test)
+    lasso.fit(X_train, Y_train)
+    print(X_train.shape)
     x = lasso.predict(X_test)
     print(lasso.error(X_test, Y_test))
 

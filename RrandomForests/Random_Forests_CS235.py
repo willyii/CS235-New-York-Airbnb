@@ -232,11 +232,12 @@ class RandomForests:
 		return np.mean(predictions)
 
 	# Random Forest Algorithm
-	def random_forest(self, train, test, max_depth, min_size, sample_size, n_trees, n_features):
+	def random_forest(self, train, test):
 		trees = list()
-		for i in range(n_trees):
-			sample = self.subsample(train, sample_size)
-			tree = self.build_tree(sample, max_depth, min_size, n_features)
+		for i in range(self.n_trees):
+			print("Tree number:", i)
+			sample = self.subsample(train, self.sample_size)
+			tree = self.build_tree(sample, self.max_depth, self.min_size, self.n_features)
 			trees.append(tree)
 		predictions = [self.bagging_predict(trees, row) for row in test]
 		return (predictions)
@@ -251,6 +252,6 @@ if __name__ == '__main__':
 	sample_size = 0.7
 	n_trees = 5
 	method = RandomForests(n_folds, max_depth, min_size, sample_size,  n_trees, dataset.to_numpy())
-	scores = method.random_forest()
-	print('Mean Squared error: %.3f%%' % np.mean(scores))
+	scores = method.random_forest(dataset, dataset)
+	print('Mean Squared error: ' , np.mean(scores))
 
