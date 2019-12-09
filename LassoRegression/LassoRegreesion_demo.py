@@ -27,6 +27,6 @@ if __name__ == '__main__':
 
     lasso = Lasso()
     lasso.fit(X_train, Y_train)
-    x = lasso.predict(X_test)
+    x = lasso.predict(X_train)
     print(x)
-    # print("MES:",lasso.error(X_test, Y_test))
+    print("MES:",lasso.error(X_test, Y_test))

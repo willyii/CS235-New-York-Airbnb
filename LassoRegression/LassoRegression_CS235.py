@@ -86,9 +86,9 @@ def Load_Data(path):
     
 class Lasso:
     
-    def __init__(self, lam = 0.01):
+    def __init__(self, lam = 0.00):
         self.lam=lam
-        self.epochs=400
+        self.epochs=40
         self.train_error = []
         self.val_error = []
 
@@ -129,7 +129,6 @@ class Lasso:
         
     def error(self, test_data, test_label):
         ''' Calculate MSE. Remove normalization'''
-        print(self.predict(test_data))
         return mean_squared_error(test_label, self.predict(test_data))
         
 
@@ -148,7 +147,6 @@ if __name__ == '__main__':
     X_train, X_test, Y_train, Y_test = Load_Data(path)
     lasso = Lasso()
     lasso.fit(X_train, Y_train)
-    print(X_train.shape)
     x = lasso.predict(X_test)
     print(lasso.error(X_test, Y_test))
 
