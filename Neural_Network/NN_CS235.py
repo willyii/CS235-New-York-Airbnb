@@ -21,7 +21,7 @@ class NN(object):
         self.process.data = self.process.data.drop(columns=['Log_price'])
         self.process.data = self.process.data.drop(columns=['zscore_price'])
 
-        # clean for minimum_Nights
+        # clean for minimum_Nights method form Group member Xinlong Yi
         self.process.data['log_minimum_nights'] = np.log(self.process.data["minimum_nights"])  # log nigths
 
         # plots
@@ -36,12 +36,13 @@ class NN(object):
         self.process.data['reviews_per_month'] = self.process.Fillna_with_Zero('reviews_per_month')
 
     def Normalization(self):
+        #Normalization for CSV, then save as .npy file
         # One_Hot_encoding for group, neibourhood and room type
         Group = self.process.OneHotEncoding('neighbourhood_group')
         Neibourhood = self.process.OneHotEncoding('neighbourhood')
         Roomtype = self.process.OneHotEncoding('room_type')
 
-        #       max-min norm
+        #max-min norm
         latitude = self.process.Max_min_norm('latitude')
         longitude = self.process.Max_min_norm('longitude')
         host_listings_count = self.process.Max_min_norm('calculated_host_listings_count')
@@ -69,7 +70,7 @@ class NN(object):
         np.save('data.npy', data)
 
     def spilt_dataset(self, dataset, rate):
-
+        #spilt dataset according to rate%
         np.random.shuffle(dataset)
         spilt_length = int(dataset.shape[0] * rate)
         train_example = dataset[0:spilt_length, 0:-1]
@@ -79,13 +80,15 @@ class NN(object):
         return train_example, train_labels, test_example, test_labels
 
     def spilt_labels(self,dataset):
-
+        #spilt dataset to examples and labels
+        #dataset should be type of numpy
         examples = dataset[:, 0:-1]
         labels = dataset[:, -1]
         return examples, labels
 
     def spilt_to_five(self,dataset):
-
+        #spilt dataset to five fold
+        #dataset should be type of numpy
         length = int(dataset.shape[0] * 0.2)
         A = dataset[0:length, :]
         B = dataset[length:length * 2, :]
@@ -95,6 +98,8 @@ class NN(object):
         return A, B, C, D, E
 
     def train_model(self, model_name, data_length):
+        # 5 model to compare
+        #https: // www.tensorflow.org / tutorials / keras / regression
         if model_name == 'A':
             model = keras.Sequential([
                 layers.Dense(256, activation='relu', input_shape=(data_length,)),
@@ -145,6 +150,9 @@ class NN(object):
         return model
 
     def plot_history(self,history):
+        #draw a history plot when training
+        #https: // www.tensorflow.org / tutorials / keras / regression
+
         hist = pd.DataFrame(history.history)
         hist['epoch'] = history.epoch
 
@@ -160,6 +168,10 @@ class NN(object):
         plt.show()
 
     def train(self,Data_url):
+        #Data_url is the address of Data.npy
+        #https: // www.tensorflow.org / tutorials / keras / overfit_and_underfit
+        # https: // www.tensorflow.org / tutorials / keras / regression
+        #https: // www.tensorflow.org / tutorials / keras / save_and_load
         data = np.load(Data_url)
 
         train_example, train_labels, test_example, test_labels = self.spilt_dataset(data, 0.9)
@@ -182,10 +194,11 @@ class NN(object):
                             callbacks=[cp_callback, early_stop])
         self.plot_history(history)
         loss, mae, mse = model.evaluate(x=test_example, y=test_labels)
-        print(mse)
         model.save_weights('model')
+        print(mse)
 
     def Compare_Network(self,Data_Url):
+        #compare 5 model on 5-Fold cross validation
         data = np.load(Data_Url)
         data_A, data_B, data_C, data_D, data_E = self.spilt_to_five(data)
         EPOCHS = 1000
@@ -227,8 +240,25 @@ class NN(object):
         plt.savefig('image.pdf')
         plt.show()
 
+    def evulate(self,Data_url):
+        # https: // www.tensorflow.org / tutorials / keras / save_and_load
+        data = np.load(Data_url)
+        train_example, train_labels, test_example, test_labels = self.spilt_dataset(data, 0.9)
+        data_length = train_example.shape[1]
+        model=self.train_model('C',data_length)
+        model.load_weights('model')
+        test_predictions=model.predict(test_example)
+        test_predictions=np.expm1(test_predictions)
+        test_labels=np.expm1(test_labels)
+        plt.scatter(test_labels,test_predictions)
+        plt.xlabel('True Values')
+        plt.ylabel('Predictions')
+        plt.axis('equal')
+        plt.show()
+
 if __name__ == '__main__':
     Regressor=NN('../Data/AB_NYC_2019.csv')
     Regressor.clean_data()
     Regressor.Normalization()
     Regressor.train('data.npy')
+    Regressor.evulate('data.npy')
