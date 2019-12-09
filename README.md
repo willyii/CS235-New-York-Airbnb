@@ -14,6 +14,9 @@ We tried five algorithms: Lasso(Osten), Neural Network(Dekang), KNN(Xiangting), 
 │   ├── CleanedData.csv  
 │   └── data_enhanced.csv  
 ├── KNN:    
+│   ├── CleanedData.csv  
+│   ├── KNN_cs235.py  
+│   ├── KNN_demo.py  
 │   └── knn_price_prediction.ipynb  
 ├── LassoRegression  
 │   ├── LassoRegreesion_demo.py  
@@ -59,7 +62,7 @@ We tried five algorithms: Lasso(Osten), Neural Network(Dekang), KNN(Xiangting), 
 
 ### How to run
 
-We prepare the toy datasets for algorithms.   
+We prepared the toy datasets for algorithms.   
 
 Use following command to run the XGBoost's demo:
 
@@ -76,3 +79,7 @@ Use following command to run the Neural Network:
 Use following command to run the Lasso's demo:
 
     python3 LassoRegression/LassoRegression_CS235.py
+    
+Use following command to run the KNN's demo:
+
+    python3 KNN/KNN_demo.py
