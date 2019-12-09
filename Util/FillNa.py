@@ -5,7 +5,7 @@ class FillNa:
     def __init__(self):
         self.fill_value = 0
 
-    def fill(self, data: pd.DataFrame,  column_name: str, method ="mean" ):
+    def fit(self, data: pd.DataFrame,  column_name: str, method ="mean" ):
         """
         Fill the missing value, default use mean to fill
         :param data: Dataset with missing value. Dataframe format
@@ -28,7 +28,8 @@ class FillNa:
         else:
             self.fill_value = method
 
-        return data[column_name].fillna(self.fill_value)
+    def transform(self, data: pd.DataFrame,  column_name: str):
+        return data[[column_name]].fillna(self.fill_value).to_numpy()
 
 if __name__ == '__main__':
     test = pd.read_csv("AB_NYC_2019.csv")

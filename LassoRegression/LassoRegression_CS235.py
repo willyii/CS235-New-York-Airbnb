@@ -7,6 +7,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
         
 def Load_Data(path):
     global train, price, test, test_pr, norm, prnorm, feature_space, samples
@@ -58,35 +59,39 @@ def Load_Data(path):
     Normalize training data to Euclidean-norm=1 to simplify lasso regression.
     Normalize the test data with same norms as above
     '''
-    samplesize = round(len(dtdf.index)/10)
-    test = dtdf.sample(samplesize)
-    train = dtdf.drop(test.index)
-    price=np.log(train.iloc[:,-1]+1)
-    train.drop(train.columns[-1], axis = 1, inplace = True)
-    test_pr=np.log(test.iloc[:,-1]+1)
-    test.drop(test.columns[-1], axis = 1, inplace = True)
-    test=test.to_numpy()
-    test_pr=(test_pr.to_numpy()).reshape(-1,1)
-    train=train.to_numpy()
-    price=(price.to_numpy()).reshape(-1,1)
-    train,norms=normalize(train)
-    price,prnorm=normalize(price)
-    test=test/norms
-    samples, feature_space=train.shape
+    Y = dtdf.iloc[:, -1].copy()
+    X = dtdf.iloc[:,:-2].copy()
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y , test_size= 0.1, shuffle= True)
+    Y_train = np.log(Y_train.to_numpy() + 1)
+    Y_test = np.log(Y_test.to_numpy() + 1)
+
+    X_train,norms = normalize(X_train.to_numpy())
+    X_test = X_test.to_numpy()/norms
+
+    return  X_train, X_test, Y_train.reshape(-1,1), Y_test.reshape(-1,1)
+    # samplesize = round(len(dtdf.index)/10)
+    # test = dtdf.sample(samplesize)
+    # train = dtdf.drop(test.index)
+    # price=np.log(train.iloc[:,-1]+1)
+    # train.drop(train.columns[-1], axis = 1, inplace = True)
+    # test_pr=np.log(test.iloc[:,-1]+1)
+    # test.drop(test.columns[-1], axis = 1, inplace = True)
+    # test=test.to_numpy()
+    # test_pr=(test_pr.to_numpy()).reshape(-1,1)
+    # train=train.to_numpy()
+    # price=(price.to_numpy()).reshape(-1,1)
+    # train,norms=normalize(train)
+    # price,prnorm=normalize(price)
+    # test=test/norms
     
 class Lasso:
     
-    def __init__(self):
-        self.lam=0.01
-        self.epochs=400
-        self.theta=np.ones((feature_space, 1))
+    def __init__(self, lam = 0.01):
+        self.lam=lam
+        self.epochs=4000
+        self.train_error = []
+        self.val_error = []
 
-        
-    
-    def predicted_price(self,theta, train):
-        ''' Predict price at current theta '''
-        predicted_price=np.dot(train,theta)
-        return predicted_price
     
     def ST(self, rho):
         ''' Soft thresholding function '''
@@ -100,7 +105,7 @@ class Lasso:
     
     def rho(self, i, theta, train, price):
         ''' Calculate rho '''
-        price_pred=self.predicted_price(theta, train)
+        price_pred=self.predict( train)
         train_i=train[:,i].reshape(-1,1)
         u=theta[i]*train_i
         r=price-price_pred+u
@@ -109,30 +114,31 @@ class Lasso:
         
     def fit(self, train, price):
         ''' train theta '''
+        self.theta=np.ones((train.shape[1], 1))
         for e in range(self.epochs):
-            for i in range(feature_space):
+            for i in range(train.shape[1]):
                 r=self.rho(i, self.theta, train, price)
-                self.theta[i]=self.ST(r)        
+                self.theta[i]=self.ST(r)
+            self.train_error.append(self.error(train, price))
+            if len(self.train_error) < 2:
+                continue
+            elif abs(self.train_error[-1] - self.train_error[-2]) < 0.001:
+                break
+            else:
+                continue
+
     
-    def predict(self, test):
+    def predict(self, data):
         ''' Predict price on test data, remove normalization'''
-        global prnorm
-        self.prediction=prnorm*np.dot(test,self.theta)
-        return self.prediction
+        # global prnorm
+        prediction=np.dot(data,self.theta) #* prnorm
+        return prediction
         
-    def error(self, test_price):
+    def error(self, test_data, test_label):
         ''' Calculate MSE. Remove normalization'''
-        return mean_squared_error(test_price, self.prediction)
+        return mean_squared_error(test_label, self.predict(test_data))
         
 
-
-# In[ ]:
-
-
-
-
-
-# In[110]:
 
 
 '''
@@ -143,16 +149,20 @@ and calculates/returns predicted price lasso.prediction. Lasso.error takes arg p
 MSE. Sample block of code shown below
 '''
 if __name__ == '__main__':
-    path = "Data/CleanedData.csv"
+    path = "CleanedData.csv"
     
-    Load_Data(path)
-    
+    X_train, X_test, Y_train, Y_test = Load_Data(path)
+    # print(X_train, X_test, Y_train, Y_test)
+    lasso = Lasso()
+    lasso.fit(X_train, Y_train, X_test, Y_test)
+    x = lasso.predict(X_test)
+    print(lasso.error(X_test, Y_test))
+
+    # print(lasso.train_error)
+
     '''
     path = "CleanedData.csv"
     Load_Data(path)
 
-    lasso=Lasso()
-    lasso.fit(train, price)
-    lasso.predict(test)
-    lasso.error(test_pr)
+    
     '''

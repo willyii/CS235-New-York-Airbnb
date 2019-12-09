@@ -13,11 +13,11 @@ class Max_Min_Norm:
 
     def transform(self,data: pd.DataFrame,column_name: str):
 
-        data.loc[data[column_name]>self.Max] =self.Max
-        data.loc[data[column_name] < self.Min] = self.Min
+        data = data.copy()
+        data[data[column_name]>self.Max] =self.Max
+        data[data[column_name] < self.Min] = self.Min
 
-        return np.array((data[column_name].values-self.Min)/
-                        (self.Max-self.Min))
+        return np.array((data[[column_name]].values-self.Min)/(self.Max-self.Min))
 
 if __name__ == '__main__':
     trainset= pd.DataFrame({'A': [1,2,3,4,5]})
@@ -27,4 +27,4 @@ if __name__ == '__main__':
     test.transform(trainset,'A')
     test.transform(testset, 'A')
 
-    print(testset)
+    print(test.transform(testset, 'A'))
