@@ -56,12 +56,12 @@ def load_data(path):
 		host_listings_count, availability,last_view, reviews_per_month, price
 	))
 	dataset = pd.DataFrame(data)
-	dataset = np.random.rand(50, 60)
-	label = np.sum(dataset, axis=1).reshape((50, 1))
-	dataset_df = pd.DataFrame(dataset)
-	dataset_df["label"] = label
+	# dataset = np.random.rand(50, 60)
+	# label = np.sum(dataset, axis=1).reshape((50, 1))
+	# dataset_df = pd.DataFrame(dataset)
+	# dataset_df["label"] = label
 
-	return dataset_df
+	return dataset
 
 class RandomForests:
 	def __init__(self, n_folds, max_depth, min_size, sample_size, n_trees, dataset):
@@ -243,7 +243,7 @@ class RandomForests:
 
 
 if __name__ == '__main__':
-	path = '/Users/faisal/PycharmProjects/CS235-New-York-Airbnb/Data/CleanedData.csv'
+	path = 'CleanedData.csv'
 	dataset = load_data(path)
 	n_folds = 5
 	max_depth = 5
@@ -251,6 +251,6 @@ if __name__ == '__main__':
 	sample_size = 0.7
 	n_trees = 5
 	method = RandomForests(n_folds, max_depth, min_size, sample_size,  n_trees, dataset.to_numpy())
-	scores = method.evaluate_algorithm()
-	print('Mean Accuracy: %.3f%%' % np.mean(scores))
+	scores = method.random_forest()
+	print('Mean Squared error: %.3f%%' % np.mean(scores))
 

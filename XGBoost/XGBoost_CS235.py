@@ -36,8 +36,8 @@ class Node:
 
         for feature in cols: # every feature
             sorted_values = np.sort(np.unique(data[feature])).flat  # Drop duplicates and sort the values of sepcific feature
-            if len(sorted_values) > 1000:
-                sorted_values = np.random.choice(sorted_values, 100, replace= False)
+            if len(sorted_values) > 100:
+                sorted_values = np.random.choice(sorted_values, 10, replace= False)
             for sample_index in range(len(sorted_values) -1 ):
 
                 split_value = (sorted_values[sample_index] + sorted_values[sample_index + 1]) / 2
@@ -73,7 +73,7 @@ class Node:
         """
         g = 2 * (previous_label.to_numpy() - label.to_numpy())
         h = 2
-        r = (g.sum() ** 2)/(2 * len(label))
+        r = (g.sum() ** 2)/(2 * len(label) )
         if r == np.nan:
             return -1
         return r
@@ -82,7 +82,7 @@ class Node:
     def leaf_weight(self, label, previous_label):
         g = 2 * (previous_label.to_numpy() - label.to_numpy())
         h = 2
-        r = (g.sum()) / (2 * len(label))
+        r = (g.sum()) / (2 * len(label) )
         if r == np.nan:
             return 0
         return r
@@ -416,7 +416,7 @@ if __name__ == '__main__':
     if not sys.warnoptions:
         warnings.simplefilter("ignore")
 
-    path = "Data/CleanedData.csv"
+    path = "CleanedData.csv"
     X_train, Y_train, X_test, Y_test = Load_Data(path)
 
     paras = {}
@@ -429,7 +429,7 @@ if __name__ == '__main__':
     paras["min_child_weight"] = 10
 
     test = XGBoost(paras)
-    # test.fit(X_train, Y_train, X_test, Y_test)
+    test.fit(X_train, Y_train, X_test, Y_test)
     print(test.train_errors)
     print(test.val_errors)
 
