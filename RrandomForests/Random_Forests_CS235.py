@@ -1,3 +1,9 @@
+"""
+Author: Faisal AlMaarik
+All of code are made according to the instruction:https://machinelearningmastery.com/implement-random-forest-scratch-python/
+Modified find best split part and the predict part. Since the instruction is for the calssification problem but ours is regression problem
+"""
+
 import pandas as pd
 import numpy as np
 from random import randrange

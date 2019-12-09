@@ -1,4 +1,9 @@
-import Data_Processing
+"""
+Author: Dekang Zeng
+This code are based on DeepLearning Framework Tensorflow.
+the informantion I followed are mainly Tensorflow's document. Some other resources are mark out in comments
+"""
+from Neural_Network.Data_Processing import Data_processing
 import numpy as np
 import pandas as pd
 import tensorflow as tf
@@ -10,7 +15,7 @@ class NN(object):
     
     def __init__(self, url):
 
-        self.process = Data_Processing.Data_processing(url)
+        self.process = Data_processing(url)
 
     def clean_data(self):
 

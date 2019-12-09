@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+"""
+Autor: Osten Anderson
+All of the code are following the following source:
+https://xavierbourretsicotte.github.io/lasso_derivation.html?fbclid=IwAR1KdrwirapSV8Wpj8KUEoX7SZajP_Ty9PYEWyCvYrO687NXOsWetFSvaK8
+"""
 
 
 import pandas as pd
@@ -137,9 +141,3 @@ if __name__ == '__main__':
 
     # print(lasso.train_error)
 
-    '''
-    path = "CleanedData.csv"
-    Load_Data(path)
-
-    
-    '''

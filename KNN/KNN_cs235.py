@@ -1,10 +1,10 @@
-import math
-import operator
+"""
+author: Xiangting Liu
+All of the code are made according to the cs235 slides: supervised learning's KNN part
+Just use Euclidean distance
+"""
 import pandas as pd
 import numpy as np
-from math import sqrt
-from collections import Counter
-from sklearn import preprocessing
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 
