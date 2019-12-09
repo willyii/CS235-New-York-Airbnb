@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[126]:
 
 
 import pandas as pd
@@ -69,26 +68,12 @@ def Load_Data(path):
     X_test = X_test.to_numpy()/norms
 
     return  X_train, X_test, Y_train.reshape(-1,1), Y_test.reshape(-1,1)
-    # samplesize = round(len(dtdf.index)/10)
-    # test = dtdf.sample(samplesize)
-    # train = dtdf.drop(test.index)
-    # price=np.log(train.iloc[:,-1]+1)
-    # train.drop(train.columns[-1], axis = 1, inplace = True)
-    # test_pr=np.log(test.iloc[:,-1]+1)
-    # test.drop(test.columns[-1], axis = 1, inplace = True)
-    # test=test.to_numpy()
-    # test_pr=(test_pr.to_numpy()).reshape(-1,1)
-    # train=train.to_numpy()
-    # price=(price.to_numpy()).reshape(-1,1)
-    # train,norms=normalize(train)
-    # price,prnorm=normalize(price)
-    # test=test/norms
     
 class Lasso:
     
-    def __init__(self, lam = 0.00):
+    def __init__(self, lam = 0.01):
         self.lam=lam
-        self.epochs=40
+        self.epochs=400
         self.train_error = []
         self.val_error = []
 

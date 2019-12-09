@@ -78,7 +78,7 @@ Use following command to run the Neural Network:
     
 Use following command to run the Lasso's demo:
 
-    python3 LassoRegression/LassoRegression_CS235.py
+    python3 LassoRegression/LassoRegression_demo.py
     
 Use following command to run the KNN's demo:
 
