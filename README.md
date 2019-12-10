@@ -62,7 +62,7 @@ We tried five algorithms: Lasso(Osten), Neural Network(Dekang), KNN(Xiangting), 
 
 ### How to run
 
-We prepared the toy datasets for algorithms.   
+We prepared the toy datasets for algorithms. For each file end with _demo, we generate the random dataset, and the label is the sum of all features plus noise. All of algorithms are performance well in this toy dataset.   
 
 Use following command to run the XGBoost's demo:
 
