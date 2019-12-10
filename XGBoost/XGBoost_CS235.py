@@ -1,5 +1,5 @@
-"""
 # -*- coding:utf-8 -*-
+"""
 # Author: Xinlong Yi
 All of code are made from scrach followed the Chen's Slide: https://homes.cs.washington.edu/~tqchen/data/pdf/BoostedTree.pdf and
 the paper: https://www.kdd.org/kdd2016/papers/files/rfp0697-chenAemb.pdf
